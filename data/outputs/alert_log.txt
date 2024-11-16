@@ -1,0 +1,9 @@
+Data Alerts:
+
+Missing data in column 'High': 1 rows
+Missing data in column 'Close': 1 rows
+Outliers detected in column 'Open': 4 rows
+Outliers detected in column 'High': 4 rows
+Outliers detected in column 'Low': 4 rows
+Outliers detected in column 'Close': 4 rows
+Outliers detected in column 'Volume': 4 rows

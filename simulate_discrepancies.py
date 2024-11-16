@@ -7,24 +7,24 @@ file_path = "data/raw/sp500_data.csv"
 if not os.path.exists(file_path):
     raise FileNotFoundError(f"{file_path} not found. Make sure you fetched the data.")
 
+# Read the original data
 data = pd.read_csv(file_path)
 
-# Introduce missing values
-num_missing = len(data) // 10  # 10% of rows
-for _ in range(num_missing):
-    row_idx = random.randint(0, len(data) - 1)
-    col_idx = random.randint(1, len(data.columns) - 1)  # Avoid the 'Date' column
-    data.iloc[row_idx, col_idx] = None
+# Create a second dataset by introducing intentional discrepancies
+data_vendor_b = data.copy()
 
-# Introduce conflicting values
-num_conflicts = len(data) // 20  # 5% of rows
-for _ in range(num_conflicts):
-    row_idx = random.randint(0, len(data) - 1)
-    col_idx = random.randint(1, len(data.columns) - 1)  # Avoid the 'Date' column
-    data.iloc[row_idx, col_idx] = data.iloc[row_idx, col_idx] * random.uniform(0.9, 1.1)  # Small variance
+# Modify vendor B data: shift prices slightly, add missing values
+for col in ["Open", "High", "Low", "Close"]:
+    data_vendor_b[col] = data_vendor_b[col].apply(
+        lambda x: x * random.uniform(0.98, 1.02) if random.random() > 0.1 else None
+    )
 
-# Save the modified data
-modified_file_path = "data/simulated/sp500_modified_data.csv"
+# Add missing rows to vendor B data
+if len(data_vendor_b) > 10:
+    data_vendor_b = data_vendor_b.drop(data_vendor_b.sample(n=10).index)
+
+# Save the second dataset
+output_path = "data/simulated/vendor_b_data.csv"
 os.makedirs("data/simulated", exist_ok=True)
-data.to_csv(modified_file_path, index=False)
-print(f"Modified data saved to {modified_file_path}")
+data_vendor_b.to_csv(output_path, index=False)
+print(f"Simulated Vendor B data saved to {output_path}")
